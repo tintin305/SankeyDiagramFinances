@@ -5,14 +5,6 @@ import plotly.graph_objs as go
 
 d = pd.read_csv('my_transactions.csv')
 
-# Relevant columns
-# d = d.drop(["Date","Original Transaction Description","My Transaction Description", "Account", "Notes", "Pay month", "Split Transaction"], axis=1)
-
-# Creating new dataframe for income items
-# isincome = d['Spending Group']=="Income"
-# income = d[isincome]
-
-
 # Simple graph of transaction amounts over time
 plotly.offline.plot({
     "data": [go.Scatter(x= d['Date'], y=d["Amount"])],
@@ -49,43 +41,16 @@ layout =  dict(
 fig = dict(data=[data], layout=layout)
 plotly.offline.plot(fig, validate=False, filename="SankeyOutput.html")
 
+# Relevant columns
+d = d.drop(["Date","Original Transaction Description","My Transaction Description", "Account", "Notes", "Pay month", "Split Transaction"], axis=1)
 
-# print(d.head())
+# Creating new dataframe for income items
+isincome = d['Spending Group']=="Income"
+income = d[isincome]
 
-# data_trace = dict(
-#     type='sankey',
-#     domain = dict(
-#       x =  [0,1],
-#       y =  [0,1]
-#     ),
-#     orientation = "h",
-#     valueformat = ".0f",
-#     node = dict(
-#       pad = 10,
-#       thickness = 30,
-#       line = dict(
-#         color = "black",
-#         width = 0.5
-#       ),
-#       label =  refugee_df['Category'].dropna(axis=0, how='any'),
-#       color = refugee_df['Color']
-#     ),
-#     link = dict(
-#       source = refugee_df['Source'].dropna(axis=0, how='any'),
-#       target = refugee_df['Target'].dropna(axis=0, how='any'),
-#       value = refugee_df['Value'].dropna(axis=0, how='any'),
-#   )
-# )
+# print(income.head())
 
-# layout =  dict(
-#     title = "Refugee movement through Manus and Nauru, via <a href='http://www.bryanbrussee.com/sankey.html'>Bryan Brussee</a>",
-#     height = 772,
-#     width = 950,
-#     font = dict(
-#       size = 10
-#     ),    
-# )
+sankey_source = list(income["Spending Group"])
+sankey_target = list(income["Category"])
+sankey_amount = list(income["Amount"])
 
-
-# fig = dict(data=[data_trace], layout=layout)
-# py.iplot(fig, validate=False)
