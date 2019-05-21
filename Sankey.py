@@ -13,11 +13,11 @@ d = pd.read_csv('my_transactions.csv')
 # income = d[isincome]
 
 
-# # Simple graph of transaction amounts over time
-# plotly.offline.plot({
-#     "data": [go.Scatter(x= d['Date'], y=d["Amount"])],
-#     "layout": go.Layout(title="hello world")
-# })
+# Simple graph of transaction amounts over time
+plotly.offline.plot({
+    "data": [go.Scatter(x= d['Date'], y=d["Amount"])],
+    "layout": go.Layout(title="hello world")
+}, filename= "simpleGraph.html")
 
 
 # Sample Sankey example for plotly
@@ -47,7 +47,7 @@ layout =  dict(
 )
 
 fig = dict(data=[data], layout=layout)
-plotly.offline.plot(fig, validate=False)
+plotly.offline.plot(fig, validate=False, filename="SankeyOutput.html")
 
 
 # print(d.head())
