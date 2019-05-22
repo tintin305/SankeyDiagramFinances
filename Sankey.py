@@ -46,18 +46,21 @@ d = d.drop(["Date","Original Transaction Description","My Transaction Descriptio
 # print(d.head())
 
 # print('\n' )
-# print(d.shape )
+print(d.shape )
 
-# groupedData = d.groupby(['Category']).first()
-# print(groupedData.head())
 
 
 
 # Creating new dataframe for income items
 isincome = d['Spending Group']=="Income"
 income = d[isincome]
+print(income.shape)
+print(income.head())
 
-# print(income.head())
+# Get the sum of the amounts per category (within income)
+incomeCategories = income.groupby('Category')['Amount'].sum()
+
+print(incomeCategories.head())
 
 sankey_source = list(income["Spending Group"])
 sankey_target = list(income["Category"])
