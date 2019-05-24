@@ -2,6 +2,11 @@ import pandas as pd
 import plotly
 import plotly.graph_objs as go
 
+def pandasPrint(listToPrint):
+    print(listToPrint)
+
+    return
+
 
 d = pd.read_csv('my_transactions.csv')
 
@@ -52,15 +57,28 @@ print(d.shape )
 
 
 # Creating new dataframe for income items
-isincome = d['Spending Group']=="Income"
-income = d[isincome]
-print(income.shape)
-print(income.head())
+isIncome = d['Spending Group']=="Income"
+income = d[isIncome]
+
+pandasPrint(income.head())
 
 # Get the sum of the amounts per category (within income)
 incomeCategories = income.groupby('Category')['Amount'].sum()
 
-print(incomeCategories.head())
+pandasPrint(incomeCategories)
+
+
+
+isExpenses = d['Spending Group']=="Day-to-day"
+expenses = d[isExpenses]
+
+
+pandasPrint(expenses.head())
+
+expensesCategories = expenses.groupby("Category")["Amount"].sum()
+
+pandasPrint(expensesCategories)
+
 
 sankey_source = list(income["Spending Group"])
 sankey_target = list(income["Category"])
