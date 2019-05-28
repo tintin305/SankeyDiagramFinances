@@ -67,17 +67,80 @@ incomeCategories = income.groupby('Category')['Amount'].sum()
 
 pandasPrint(incomeCategories)
 
+# Get the unique categories
+categories = income.Category.unique()
+
+# print(incomeCategories[categories[1]])
+
+# make source, target, amount and label lists for the sankey diagram 
+income_source =list(range(0, len(categories)))
+print(income_source)
 
 
-isExpenses = d['Spending Group']=="Day-to-day"
-expenses = d[isExpenses]
+income_amount = []
+income_target = []
+income_label = []
+income_colour = []
+for i in range(0, len(categories)):
+    # print(categories[i])
+    income_label.append(categories[i])
+    income_amount.append(incomeCategories[categories[i]])
+    income_target.append(len(categories))
+    income_colour.append("blue")
 
 
-pandasPrint(expenses.head())
+# print(income_source)
+# print(income_amount)
+# print(income_target)
+# print(income_label)
 
-expensesCategories = expenses.groupby("Category")["Amount"].sum()
 
-pandasPrint(expensesCategories)
+
+# print(len(income_source))
+# print(len(income_amount))
+# print(len(income_target))
+# print(len(income_label))
+
+
+# Sample Sankey example for plotly adapted for income only
+data = dict(
+    type='sankey',
+    node = dict(
+      pad = 15,
+      thickness = 20,
+      line = dict(
+        color = "black",
+        width = 0.5
+      ),
+      label = income_label,
+      color = income_colour
+    ),
+    link = dict(
+      source = income_source,
+      target = income_target,
+      value = income_amount
+  ))
+
+layout =  dict(
+    title = "Basic Sankey Diagram of just incomes",
+    font = dict(
+      size = 10
+    )
+)
+
+fig = dict(data=[data], layout=layout)
+plotly.offline.plot(fig, validate=False, filename="SankeyIncomeOutput.html")
+
+
+# isExpenses = d['Spending Group']=="Day-to-day"
+# expenses = d[isExpenses]
+
+
+# pandasPrint(expenses.head())
+
+# expensesCategories = expenses.groupby("Category")["Amount"].sum()
+
+# pandasPrint(expensesCategories)
 
 
 sankey_source = list(income["Spending Group"])
