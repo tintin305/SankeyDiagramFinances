@@ -2,70 +2,59 @@ import pandas as pd
 import plotly
 import plotly.graph_objs as go
 
-def pandasPrint(listToPrint):
-    print(listToPrint)
+def createItems(d):
+    # Creating new dataframe for income items
+  isIncome = d['Spending Group']=="Income"
+  income = d[isIncome]
 
-    return
+  # Creating new dataframe for Day-to-day items
+  isExpense = d['Spending Group']=='Day-to-day'
+  expense = d[isExpense]
 
+  # Creating new dataframe for recurring items
+  isRecurring = d['Spending Group']=='Recurring'
+  recurring = d[isRecurring]
 
+  # Creating new dataframe for recurring items
+  isInvestment = d['Spending Group']=='Investments'
+  investment = d[isInvestment]
+  return income, expense, recurring, investment
+
+def sumAmounts(income, expense, recurring, investment):
+  incomeCategories = income.groupby('Category')['Amount'].sum()
+  expenseCategories = expense.groupby('Category')['Amount'].sum()
+  recurringCategories = recurring.groupby('Category')['Amount'].sum()
+  investmentCategories = investment.groupby('Category')['Amount'].sum()
+
+  return incomeCategories, expenseCategories, recurringCategories, investmentCategories
+
+def printCategories(incomeCategories, expenseCategories, recurringCategories, investmentCategories):
+  print('Income')
+  print(incomeCategories)
+
+  print('Expenses')
+  print(expenseCategories)
+
+  print('Recurring Expenses')
+  print(recurringCategories)
+
+  print('Investments')
+  print(investmentCategories)
+  return
+
+# Read in csv from 22Seven
 d = pd.read_csv('my_transactions.csv')
-
-# Simple graph of transaction amounts over time
-# plotly.offline.plot({
-#     "data": [go.Scatter(x= d['Date'], y=d["Amount"])],
-#     "layout": go.Layout(title="hello world")
-# }, filename= "simpleGraph.html")
-
-
-# # Sample Sankey example for plotly
-# data = dict(
-#     type='sankey',
-#     node = dict(
-#       pad = 15,
-#       thickness = 20,
-#       line = dict(
-#         color = "black",
-#         width = 0.5
-#       ),
-#       label = ["A1", "A2", "B1", "B2", "C1", "C2"],
-#       color = ["blue", "blue", "blue", "blue", "blue", "blue"]
-#     ),
-#     link = dict(
-#       source = [0,1,0,2,3,3],
-#       target = [2,3,3,4,4,5],
-#       value = [8,4,2,8,4,2]
-#   ))
-
-# layout =  dict(
-#     title = "Basic Sankey Diagram",
-#     font = dict(
-#       size = 10
-#     )
-# )
-
-# fig = dict(data=[data], layout=layout)
-# plotly.offline.plot(fig, validate=False, filename="SankeyOutput.html")
 
 # Relevant columns
 d = d.drop(["Date","Original Transaction Description","My Transaction Description", "Account", "Notes", "Pay month", "Split Transaction"], axis=1)
-# print(d.head())
 
-# print('\n' )
-print(d.shape )
+# Create dataframes for items
+income, expense, recurring, investment = createItems(d)
 
+# Get the sum of the amounts per category
+incomeCategories, expenseCategories, recurringCategories, investmentCategories = sumAmounts(income, expense, recurring, investment)
 
-
-
-# Creating new dataframe for income items
-isIncome = d['Spending Group']=="Income"
-income = d[isIncome]
-
-pandasPrint(income.head())
-
-# Get the sum of the amounts per category (within income)
-incomeCategories = income.groupby('Category')['Amount'].sum()
-
-pandasPrint(incomeCategories)
+printCategories(incomeCategories, expenseCategories, recurringCategories, investmentCategories)
 
 # Get the unique categories
 categories = income.Category.unique()
