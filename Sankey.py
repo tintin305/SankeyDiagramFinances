@@ -48,6 +48,8 @@ d = pd.read_csv('my_transactions.csv')
 # Relevant columns
 d = d.drop(["Date","Original Transaction Description","My Transaction Description", "Account", "Notes", "Pay month", "Split Transaction"], axis=1)
 
+
+# These should not be hard coded like this. The system should pick up which categories are within the file. The user may have made their own categories and removed others.
 # Create dataframes for items
 income, expense, recurring, investment = createItems(d)
 
