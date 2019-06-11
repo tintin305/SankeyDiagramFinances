@@ -2,31 +2,25 @@ import pandas as pd
 import plotly
 import plotly.graph_objs as go
 
-def createItems(d):
-    # Creating new dataframe for income items
-  isIncome = d['Spending Group']=="Income"
-  income = d[isIncome]
+def createItems(d, uniqueCategories):
 
-  # Creating new dataframe for Day-to-day items
-  isExpense = d['Spending Group']=='Day-to-day'
-  expense = d[isExpense]
+  categories = []
 
-  # Creating new dataframe for recurring items
-  isRecurring = d['Spending Group']=='Recurring'
-  recurring = d[isRecurring]
+  for uniqueCategory in uniqueCategories:
+    isUniqueCategory = d['Spending Group']==uniqueCategory
+    categories.append(d[isUniqueCategory])
 
-  # Creating new dataframe for recurring items
-  isInvestment = d['Spending Group']=='Investments'
-  investment = d[isInvestment]
-  return income, expense, recurring, investment
+  return categories
 
-def sumAmounts(income, expense, recurring, investment):
-  incomeCategories = income.groupby('Category')['Amount'].sum()
-  expenseCategories = expense.groupby('Category')['Amount'].sum()
-  recurringCategories = recurring.groupby('Category')['Amount'].sum()
-  investmentCategories = investment.groupby('Category')['Amount'].sum()
+def sumAmounts(categories):
 
-  return incomeCategories, expenseCategories, recurringCategories, investmentCategories
+  sumCategories = []
+
+  for category in categories:
+    specifiedCategory = category.groupby('Category')['Amount'].sum()
+    sumCategories.append(specifiedCategory)
+
+  return sumCategories
 
 def printCategories(incomeCategories, expenseCategories, recurringCategories, investmentCategories):
   print('Income')
@@ -48,18 +42,24 @@ d = pd.read_csv('my_transactions.csv')
 # Relevant columns
 d = d.drop(["Date","Original Transaction Description","My Transaction Description", "Account", "Notes", "Pay month", "Split Transaction"], axis=1)
 
+# Create list of the different categories (these can be created by the user beforehand)
+uniqueCategories = list(d['Spending Group'].unique())
 
 # These should not be hard coded like this. The system should pick up which categories are within the file. The user may have made their own categories and removed others.
 # Create dataframes for items
-income, expense, recurring, investment = createItems(d)
+categories = []
+categories = createItems(d, uniqueCategories)
+
 
 # Get the sum of the amounts per category
-incomeCategories, expenseCategories, recurringCategories, investmentCategories = sumAmounts(income, expense, recurring, investment)
+summedCategories = sumAmounts(categories)
+print(summedCategories)
 
-printCategories(incomeCategories, expenseCategories, recurringCategories, investmentCategories)
 
 # Get the unique categories
-categories = income.Category.unique()
+# print(summedCategories[1]['Category'])
+# categories = summedCategories['Category']
+# print(categories)
 
 # print(incomeCategories[categories[1]])
 
