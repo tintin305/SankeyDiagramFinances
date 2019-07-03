@@ -1,3 +1,10 @@
+# TODO Provide a user selectable date range
+# TODO Determine if amount is income or not
+# TODO create two dataframes, one for income and one for spending (later extend to all spending groups)
+# TODO Sum amounts in new dataframes according to Category (https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/)  shows how to use groupby() command
+# TODO use summed amounts to make a list to input into the Sankey code for the links
+# TODO figure out how to make labels for the Sankey
+
 import pandas as pd
 import plotly
 import plotly.graph_objs as go
@@ -156,9 +163,3 @@ sankey_amount = list(income["Amount"])
 
 
 
-# # Plan: 
-# - Determine if amount is income or not
-# - create two dataframes, one for income and one for spending (later extend to all spending groups)
-# - Sum amounts in new dataframes according to Category (https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/)  shows how to use groupby() command
-# - use summed amounts to make a list to input into the Sankey code for the links
-# - figure out how to make labels for the Sankey
