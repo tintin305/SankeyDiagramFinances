@@ -10,12 +10,12 @@ import plotly
 import plotly.graph_objs as go
 
 
-def createItems(d, uniqueCategories):
+def createItems(d, uniqueGroups):
 
     # Each category is now stored in a dict where each dict name is given by: 'Category_categoryName'
     categories = {}
 
-    for uniqueCategory in uniqueCategories:
+    for uniqueCategory in uniqueGroups:
         isUniqueCategory = d['Spending Group'] == uniqueCategory
         categoryName = uniqueCategory
         categories['{}'.format(categoryName)] = d[isUniqueCategory]
@@ -58,25 +58,29 @@ d = pd.read_csv('my_transactions.csv')
 # Relevant columns (remove unneeded columns)
 d = d.drop(["Date", "Original Transaction Description", "My Transaction Description", "Account", "Notes", "Pay month", "Split Transaction"], axis=1)
 
-# Create list of the different categories (these can be created by the user beforehand)
-uniqueCategories = list(d['Spending Group'].unique())
+# Create list of the different spending groups (these can be created by the user beforehand)
+uniqueGroups = list(d['Spending Group'].unique())
+
 
 
 # Create dataframes for each category
 # Using a dict to store the different categories
 categories = {}
-categories = createItems(d, uniqueCategories)
+categories = createItems(d, uniqueGroups)
 
 # Get the sum of the amounts per category
 summedCategories = sumAmounts(categories)
 
-
 incomeCategories = (summedCategories['Income'])
 
-categories = ['Bank Charges & Fees', 'Card Payments', 'Eating Out & Takeouts', 'Education & Study',
-'Health & Medical', 'Home Utility & Service', 'Interest', 'Salaries & Wages'] 
-# print(incomeCategories)
-# print(incomeCategories)
+
+# categories = ['Bank Charges & Fees', 'Card Payments', 'Eating Out & Takeouts', 'Education & Study',
+# 'Health & Medical', 'Home Utility & Service', 'Interest', 'Salaries & Wages'] 
+
+# Create list of the different spending groups (these can be created by the user beforehand)
+categories = incomeCategories.keys()
+
+
 # categories = incomeCategories['Category']
 # print(categories)
 # Get the unique categories
@@ -87,19 +91,17 @@ categories = ['Bank Charges & Fees', 'Card Payments', 'Eating Out & Takeouts', '
 # print(incomeCategories[categories[1]])
 
 # make source, target, amount and label lists for the sankey diagram 
-income_source = list(range(0, len(categories)))
-print(income_source)
-
+income_source = list(range(0, len(incomeCategories)))
 
 income_amount = []
 income_target = []
 income_label = []
 income_colour = []
-for i in range(0, len(categories)):
-    # print(categories[i])
+for i in range(0, len(incomeCategories)):
+    print(incomeCategories[i])
     income_label.append(categories[i])
-    income_amount.append(incomeCategories[categories[i]])
-    income_target.append(len(categories))
+    income_amount.append(incomeCategories[i])
+    income_target.append(len(incomeCategories))
     income_colour.append("blue")
 
 
@@ -157,9 +159,9 @@ plotly.offline.plot(fig, validate=False, filename="SankeyIncomeOutput.html")
 # pandasPrint(expensesCategories)
 
 
-sankey_source = list(income["Spending Group"])
-sankey_target = list(income["Category"])
-sankey_amount = list(income["Amount"])
+# sankey_source = list(income["Spending Group"])
+# sankey_target = list(income["Category"])
+# sankey_amount = list(income["Amount"])
 
 
 
