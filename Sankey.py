@@ -71,52 +71,75 @@ categories = createItems(d, uniqueGroups)
 # Get the sum of the amounts per category
 summedCategories = sumAmounts(categories)
 
+
 incomeCategories = (summedCategories['Income'])
 
-
-# categories = ['Bank Charges & Fees', 'Card Payments', 'Eating Out & Takeouts', 'Education & Study',
-# 'Health & Medical', 'Home Utility & Service', 'Interest', 'Salaries & Wages'] 
-
-# Create list of the different spending groups (these can be created by the user beforehand)
+# Create list of the different spending categories (these can be created by the user beforehand)
 categories = incomeCategories.keys()
 
+# make source, target, amount and label lists for the sankey diagram 
+# SECTION 1: Income to middle
+sankey_source = list(range(0, len(incomeCategories)))
 
-# categories = incomeCategories['Category']
-# print(categories)
-# Get the unique categories
-# print(summedCategories[1]['Category'])
-# categories = summedCategories['Category']
-# print(categories)
+sankey_amount = []
+sankey_target = []
+sankey_label = []
+sankey_colour = []
+for i in range(0, len(incomeCategories)):
+    # print(incomeCategories[i])
+    sankey_label.append(categories[i])
+    sankey_amount.append(incomeCategories[i])
+    sankey_target.append(len(incomeCategories))
+    sankey_colour.append("blue")
 
-# print(incomeCategories[categories[1]])
+sankey_label.append('Middle')
+sankey_colour.append("green")
+
+# print(sankey_source)
+#  Repeat for outgoing groups
+
+# SECTION 2: Middle to spending groups
+
+otherCategories = list(summedCategories.keys())
+otherCategories.remove('Income')
+otherCategories.remove('Transfer')
+otherCategories.remove('Invest-save-repay')
+
+targetCounter = len(incomeCategories)+1
+
 
 # make source, target, amount and label lists for the sankey diagram 
-income_source = list(range(0, len(incomeCategories)))
+#  Loop through the spending groups
+for i in range(0, len(otherCategories)):
+    print(otherCategories[i])
 
-income_amount = []
-income_target = []
-income_label = []
-income_colour = []
-for i in range(0, len(incomeCategories)):
-    print(incomeCategories[i])
-    income_label.append(categories[i])
-    income_amount.append(incomeCategories[i])
-    income_target.append(len(incomeCategories))
-    income_colour.append("blue")
+    sankey_source.append(len(incomeCategories))
+    sankey_label.append(otherCategories[i])
+    sankey_amount.append(-sum(summedCategories[otherCategories[i]]))
+    sankey_target.append(targetCounter)
+    sankey_colour.append("blue")
+
+    # SECTION 3: Spending groups to categories within each spending group
+    sankeyCategories = (summedCategories[otherCategories[i]])
+    categories = summedCategories[otherCategories[i]].keys()
+
+    sourceCounter = targetCounter
+    targetCounter = targetCounter + 1
+
+    for k in range(0, len(sankeyCategories)):
+      print(sankeyCategories[i])
+
+      sankey_source.append(sourceCounter)
+      sankey_label.append(categories[k])
+      sankey_amount.append(-sankeyCategories[k])
+      sankey_target.append(targetCounter)
+      targetCounter = targetCounter +1
+      sankey_colour.append("yellow")
 
 
-# print(income_source)
-# print(income_amount)
-# print(income_target)
-# print(income_label)
 
 
-
-# print(len(income_source))
-# print(len(income_amount))
-# print(len(income_target))
-# print(len(income_label))
-
+    
 
 # Sample Sankey example for plotly adapted for income only
 data = dict(
@@ -128,13 +151,13 @@ data = dict(
         color = "black",
         width = 0.5
       ),
-      label = income_label,
-      color = income_colour
+      label = sankey_label,
+      color = sankey_colour
     ),
     link = dict(
-      source = income_source,
-      target = income_target,
-      value = income_amount
+      source = sankey_source,
+      target = sankey_target,
+      value = sankey_amount
   ))
 
 layout =  dict(
@@ -148,20 +171,60 @@ fig = dict(data=[data], layout=layout)
 plotly.offline.plot(fig, validate=False, filename="SankeyIncomeOutput.html")
 
 
-# isExpenses = d['Spending Group']=="Day-to-day"
-# expenses = d[isExpenses]
 
+# #  Repeat for outgoing expenses
 
-# pandasPrint(expenses.head())
+# otherCategories = list(summedCategories.keys())
+# otherCategories.remove('Income')
+# otherCategories.remove('Transfer')
 
-# expensesCategories = expenses.groupby("Category")["Amount"].sum()
+# sankeyCategories = (summedCategories[otherCategories[2]])
 
-# pandasPrint(expensesCategories)
+# # Create list of the different spending categories (these can be created by the user beforehand)
+# categories = sankeyCategories.keys()
 
+# # make source, target, amount and label lists for the sankey diagram 
+# sankey_source = []
 
-# sankey_source = list(income["Spending Group"])
-# sankey_target = list(income["Category"])
-# sankey_amount = list(income["Amount"])
+# sankey_amount = []
+# sankey_target = []
+# sankey_label = ["middle"]
+# sankey_colour = ["red"]
+# for i in range(0, len(sankeyCategories)):
+#     print(sankeyCategories[i])
 
+#     sankey_source.append(0)
+#     sankey_label.append(categories[i])
+#     sankey_amount.append(-sankeyCategories[i])
+#     sankey_target.append(i+1)
+#     sankey_colour.append("blue")
 
+    
+# # Sample Sankey example for plotly adapted for income only
+# data = dict(
+#     type='sankey',
+#     node=dict(
+#       pad=15,
+#       thickness = 20,
+#       line = dict(
+#         color = "black",
+#         width = 0.5
+#       ),
+#       label = sankey_label,
+#       color = sankey_colour
+#     ),
+#     link = dict(
+#       source = sankey_source,
+#       target = sankey_target,
+#       value = sankey_amount
+#   ))
 
+# layout =  dict(
+#     title = "Basic Sankey Diagram of just one spending category",
+#     font = dict(
+#       size = 10
+#     )
+# )
+
+# fig = dict(data=[data], layout=layout)
+# plotly.offline.plot(fig, validate=False, filename="SankeySpendingOutput.html")
