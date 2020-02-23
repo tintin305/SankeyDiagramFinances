@@ -1,0 +1,8 @@
+# This is to make sure that when the repository is cloned, this folder is there for the user to put their raw data.
+
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore
+
+*.csv
