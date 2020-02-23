@@ -1,4 +1,3 @@
-# TODO Provide a user selectable date range
 # TODO Determine if amount is income or not
 # TODO create two dataframes, one for income and one for spending (later extend to all spending groups)
 # TODO Sum amounts in new dataframes according to Category (https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/)  shows how to use groupby() command
@@ -67,7 +66,7 @@ def loadData():
     return data
 
 
-def generateSankey(data):
+def generateSankey(data, startDate, endDate):
 
     # Relevant columns (remove unneeded columns)
     data.drop(["Date", "Original Transaction Description", "My Transaction Description", "Account", "Notes", "Pay month", "Split Transaction"], axis=1, inplace=True)
@@ -92,25 +91,21 @@ def generateSankey(data):
     categories = incomeCategories.keys()
 
     # make source, target, amount and label lists for the sankey diagram 
-    # SECTION 1: Income to middle
-    sankey_source = list(range(0, len(incomeCategories)))
+    # SECTION 1: Income to mid section. The unaccounted for amount will be the amount currently in the bank account.
+    incomeFlow = list(range(0, len(incomeCategories)))
 
     sankey_amount = []
     sankey_target = []
     sankey_label = []
     sankey_colour = []
     for i in range(0, len(incomeCategories)):
-        # print(incomeCategories[i])
         sankey_label.append(categories[i])
         sankey_amount.append(incomeCategories[i])
         sankey_target.append(len(incomeCategories))
         sankey_colour.append("blue")
 
-    sankey_label.append('Middle')
+    sankey_label.append('Income Amount')
     sankey_colour.append("green")
-
-    # print(sankey_source)
-    #  Repeat for outgoing groups
 
     # SECTION 2: Middle to spending groups
 
@@ -125,9 +120,7 @@ def generateSankey(data):
     # make source, target, amount and label lists for the sankey diagram 
     #  Loop through the spending groups
     for i in range(0, len(otherCategories)):
-        print(otherCategories[i])
-
-        sankey_source.append(len(incomeCategories))
+        incomeFlow.append(len(incomeCategories))
         sankey_label.append(otherCategories[i])
         sankey_amount.append(-sum(summedCategories[otherCategories[i]]))
         sankey_target.append(targetCounter)
@@ -141,21 +134,16 @@ def generateSankey(data):
         targetCounter = targetCounter + 1
 
         for k in range(0, len(sankeyCategories)):
-            print(sankeyCategories[i])
-
-            sankey_source.append(sourceCounter)
+            incomeFlow.append(sourceCounter)
             sankey_label.append(categories[k])
             sankey_amount.append(-sankeyCategories[k])
             sankey_target.append(targetCounter)
             targetCounter = targetCounter +1
             sankey_colour.append("yellow")
 
+    title = "Sankey diagram for date range: %s - %s" % (str(startDate), str(endDate))
 
 
-
-        
-
-    # Sample Sankey example for plotly adapted for income only
     data = dict(
         type='sankey',
         node=dict(
@@ -169,13 +157,13 @@ def generateSankey(data):
         color = sankey_colour
         ),
         link = dict(
-        source = sankey_source,
+        source = incomeFlow,
         target = sankey_target,
         value = sankey_amount
     ))
 
     layout =  dict(
-        title = "Basic Sankey Diagram of just incomes",
+        title = title,
         font = dict(
         size = 10
         )
@@ -203,11 +191,10 @@ if __name__ == "__main__":
     data = loadData()
 
 
-
     # This function allows for the selection of a date range. Format is YYYY, MM, DD
     startDate = datetime.date(2018, 10, 10)
     endDate = datetime.date(2020, 1, 1)
     data = extractDateRange(data, startDate, endDate)
 
 
-    generateSankey(data)
+    generateSankey(data, startDate, endDate)
