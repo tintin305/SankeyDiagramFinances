@@ -33,3 +33,11 @@ The system has only been tested on 3.X of Python.
 In order to run the script simply run:
 
 ```python Sankey.py```
+
+
+<!-- ## Example Sankey Diagram -->
+
+<!-- This image illustrates an example of a Sankey diagram that is generated with the use of the app. -->
+
+<!-- TODO: Create this image . -->
+<!-- ![Example Sankey Diagram](https://github.com/tintin305/SankeyDiagramFinances/blob/master/Figures/SankeyDiagramExample.png?raw=true "Example Sankey Diagram") -->
